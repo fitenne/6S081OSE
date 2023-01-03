@@ -295,6 +295,9 @@ fork(void)
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
+  // inherit traced syscall bit mask
+  np->trace_syscall = p->trace_syscall; 
+
   // increment reference counts on open file descriptors.
   for(i = 0; i < NOFILE; i++)
     if(p->ofile[i])
