@@ -13,6 +13,7 @@ struct proc proc[NPROC];
 struct proc *initproc;
 
 int nextpid = 1;
+int knproc = 0;
 struct spinlock pid_lock;
 
 extern void forkret(void);
@@ -92,6 +93,7 @@ allocpid() {
   acquire(&pid_lock);
   pid = nextpid;
   nextpid = nextpid + 1;
+  ++knproc;
   release(&pid_lock);
 
   return pid;
@@ -164,6 +166,7 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+  --knproc;
 }
 
 // Create a user page table for a given process,
@@ -656,4 +659,9 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+int
+nproc(void) {
+  return knproc;
 }
